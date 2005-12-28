@@ -47,7 +47,12 @@ import Control.Concurrent.MVar
 
 Please note that accessor methods on these objects will not return SqlErrors
 since AnyDBM users won't expect them.  Instead, they will marshal those
-into IOErrors. -}
+into IOErrors.
+
+Also, please note that you cannot expect a HDBCDBM to be able to store
+the NUL character since most SQL databases can't store it.  If you need to be
+able to store that character with your data, I suggest passing your data
+through read/show around this module. -}
 data HDBCDBM = HDBCDBM {conn :: Connection,
                         tablename :: String,
                         keycolname :: String,
