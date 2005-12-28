@@ -159,7 +159,10 @@ instance AnyDBM HDBCDBM where
         do res <- quickQuery (conn dbm) 
                   ("SELECT " ++ keycolname dbm ++ ", " ++ valcolname dbm ++
                    " FROM " ++ tablename dbm) []
-           return $ map convrow res
+           -- This forces the entire result to be read before returning
+           -- any of it.  Ugly for now -- AnyDBM API changes could improve
+           -- this.
+           return $ seq (length res) map convrow res
         where convrow [k, v] = (fromSql k, fromSql v)
               convrow x = error $ "toListA: unexpected row " ++ show x
 
