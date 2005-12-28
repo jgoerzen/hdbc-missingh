@@ -25,6 +25,8 @@ import MissingH.AnyDBM
 import MissingH.AnyDBM.StringDBM
 import MissingH.AnyDBM.FiniteMapDBM
 import MissingH.AnyDBM.MapDBM
+import MissingH.AnyDBM.HDBCDBM
+import Database.HDBC.Sqlite3
 import System.Directory
 import MissingH.IO.HVFS.Utils
 import MissingH.Path.FilePath
@@ -114,8 +116,16 @@ test_stringdbm = generic_persist_test (return SystemFS)
                  generic_test (return SystemFS)
                    (\f -> openStringVDBM f (joinPaths "testtmp" "StringDBM") ReadWriteMode)
 
+test_hdbcdbm = generic_persist_test (connsql3)
+                  (\f -> openSimpleHDBCDBM "testtbl" f)
+               ++
+               generic_test (connsql3)
+                  (\f -> openSimpleHDBCDBM "testtbl" f)
+    where connsql3 = connectSqlite3 (joinPaths "testtmp" "HDBCDBM")
+
 tests = TestList [TestLabel "HashTable" (TestList test_hashtable),
                   TestLabel "StringDBM" (TestList test_stringdbm),
                   TestLabel "FiniteMap" (TestList test_finitemap),
-                  TestLabel "MapDBM" (TestList test_mapdbm)
+                  TestLabel "MapDBM" (TestList test_mapdbm),
+                  TestLabel "HDBCDBM" (TestList test_hdbcdbm)
                  ]
