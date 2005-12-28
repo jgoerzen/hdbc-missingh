@@ -1,5 +1,0 @@
- basename p = reverse $ takeWhile (/= '/') $ reverse p
-
- dirname p  = case reverse $ dropWhile (/= '/') $ reverse p of
- [] -> "."
- p' -> p'
