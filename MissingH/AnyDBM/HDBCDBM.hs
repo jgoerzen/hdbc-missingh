@@ -29,16 +29,24 @@ Copyright (C) 2005 John Goerzen <jgoerzen@complete.org>
 HDBC backend for DBM databases
 
 Written by John Goerzen, jgoerzen\@complete.org
+
 -}
 
-module MissingH.AnyDBM.HDBCDBM where
+module MissingH.AnyDBM.HDBCDBM(HDBCDBM, openSimpleHDBCDBM,
+                               openHDBCDBM) where
 
 import MissingH.AnyDBM
 import Database.HDBC
 import System.IO(IOMode)
 import Data.Char
 import Control.Monad
+import Control.Exception 
 
+{- | Main HDBC DBM type.
+
+Please note that accessor methods on these objects will not return SqlErrors
+since AnyDBM users won't expect them.  Instead, they will marshal those
+into IOErrors. -}
 data HDBCDBM = HDBCDBM {conn :: Connection,
                         tablename :: String,
                         keycolname :: String,
@@ -130,13 +138,13 @@ updatequery dbm = "UPDATE " ++ (tablename dbm) ++ " SET " ++
                   " = ?"
         
 instance AnyDBM HDBCDBM where
-    closeA dbm = handleSqlError $ 
+    closeA dbm = handleerror dbm $ 
                  do commit (conn dbm)
                     disconnect (conn dbm)
 
-    flushA dbm = handleSqlError $ commit (conn dbm)
+    flushA dbm = handleerror dbm $ commit (conn dbm)
 
-    insertA dbm key value = handleSqlError $ 
+    insertA dbm key value = handleerror dbm $ 
             do count <- run (conn dbm) (updatequery dbm) 
                         [toSql value, toSql key]
                case count of
@@ -147,17 +155,17 @@ instance AnyDBM HDBCDBM where
                  1 -> return () -- We tweaked 1 row
                  x -> fail $ "HDBC insertA: unexpected number of rows updated: " ++ show x
 
-    deleteA dbm key = handleSqlError $
+    deleteA dbm key = handleerror dbm $
             run (conn dbm) (deletequery dbm) [toSql key] >> return ()
 
-    lookupA dbm key = handleSqlError $
+    lookupA dbm key = handleerror dbm $
         do res <- quickQuery (conn dbm) (querykey dbm) [toSql key]
            case res of
              [] -> return Nothing
              [[_, value]] -> return (Just (fromSql value))
              x -> fail $ "lookupA: unexpected return value " ++ show x
 
-    toListA dbm = handleSqlError $
+    toListA dbm = handleerror dbm $
         do res <- quickQuery (conn dbm) 
                   ("SELECT " ++ keycolname dbm ++ ", " ++ valcolname dbm ++
                    " FROM " ++ tablename dbm) []
@@ -167,4 +175,14 @@ instance AnyDBM HDBCDBM where
            return $ seq (length res) map convrow res
         where convrow [k, v] = (fromSql k, fromSql v)
               convrow x = error $ "toListA: unexpected row " ++ show x
+
+{- When a SQL error occurs, a transaction can be left in an indeterminate
+state.  Commit things, then re-raise the error.
+
+Also, wrap it all in handleSqlError since AnyDBM users might not expect
+a SqlError. -}
+handleerror dbm action = handleSqlError $ catchSql action handler
+    where handler e =
+              do commit (conn dbm)
+                 throwDyn e
 
