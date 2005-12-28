@@ -27,6 +27,7 @@ import MissingH.AnyDBM.FiniteMapDBM
 import MissingH.AnyDBM.MapDBM
 import MissingH.AnyDBM.HDBCDBM
 import Database.HDBC.Sqlite3
+import Database.HDBC.PostgreSQL
 import System.Directory
 import MissingH.IO.HVFS.Utils
 import MissingH.Path.FilePath
@@ -51,13 +52,18 @@ deleteall h = do k <- keysA h
 
 weirdl = sort $ [("", "empty"), 
                  ("foo\nbar", "v1\0v2"),
-                 ("v3,v4", ""),
+                 ("v3\x01v4", ""),
                  ("k\0ey", "\xFF")]
+
+weirdl2 = sort $ [("", "empty"),
+                  ("foo\nbar", "v1\x01v2"),
+                  ("v3\x02v4", ""),
+                  ("key", "\xFF")]
 
 createdir = TestCase $ createDirectory "testtmp"
 removedir = TestCase $ recursiveRemove SystemFS "testtmp"
 
-generic_test initfunc openfunc =
+generic_test wl initfunc openfunc =
     let f = mf initfunc openfunc in
         [
          createdir
@@ -79,19 +85,19 @@ generic_test initfunc openfunc =
                              ["1", "3", "5"] @>=? (keysA h >>= return . sort)
                              ["2", "4", "6"] @>=? (valuesA h >>= return . sort)
                              deleteall h
-        ,f "weirdchars" $ \h -> do insertListA h weirdl
-                                   weirdl @>=? (toListA h >>= return . sort)
+        ,f "weirdchars" $ \h -> do insertListA h wl
+                                   wl @>=? (toListA h >>= return . sort)
                                    deleteall h
         ,removedir
         ]
 
-generic_persist_test initfunc openfunc =
+generic_persist_test wl initfunc openfunc  =
     let f = mf initfunc openfunc in
         [
          createdir
         ,f "empty" deleteall 
-        ,f "weirdpop" $ \h -> insertListA h weirdl
-        ,f "weirdcheck" $ \h -> do weirdl @>=? (toListA h >>= return . sort)
+        ,f "weirdpop" $ \h -> insertListA h wl
+        ,f "weirdcheck" $ \h -> do wl @>=? (toListA h >>= return . sort)
                                    deleteall h
                                    insertA h "key" "value"
         ,f "step3" $ \h -> do [("key", "value")] @>=? (toListA h >>= return . sort)
@@ -103,29 +109,31 @@ generic_persist_test initfunc openfunc =
         ,removedir
         ]
 
-test_hashtable = generic_test (return ())
+test_hashtable = generic_test weirdl (return ())
                   (\_ -> ((new (==) hashString)::IO (HashTable String String)))
 
-test_finitemap = generic_test (return ())
+test_finitemap = generic_test weirdl (return ())
                   (\_ -> newFiniteMapDBM)
-test_mapdbm = generic_test (return ())
+test_mapdbm = generic_test weirdl (return ())
                   (\_ -> newMapDBM)
-test_stringdbm = generic_persist_test (return SystemFS)
+test_stringdbm = generic_persist_test weirdl (return SystemFS)
                    (\f -> openStringVDBM f (joinPaths "testtmp" "StringDBM") ReadWriteMode)
                  ++
-                 generic_test (return SystemFS)
+                 generic_test weirdl (return SystemFS)
                    (\f -> openStringVDBM f (joinPaths "testtmp" "StringDBM") ReadWriteMode)
 
-test_hdbcdbm = generic_persist_test (connsql3)
-                  (\f -> openSimpleHDBCDBM "testtbl" f)
+test_hdbcdbm cf = generic_persist_test weirdl2 (cf)
+                  (\f -> openSimpleHDBCDBM "hdbcdbmtest" f)
                ++
-               generic_test (connsql3)
-                  (\f -> openSimpleHDBCDBM "testtbl" f)
+               generic_test weirdl2 (cf)
+                  (\f -> openSimpleHDBCDBM "hdbcdbmtest" f)
     where connsql3 = connectSqlite3 (joinPaths "testtmp" "HDBCDBM")
 
 tests = TestList [TestLabel "HashTable" (TestList test_hashtable),
                   TestLabel "StringDBM" (TestList test_stringdbm),
                   TestLabel "FiniteMap" (TestList test_finitemap),
                   TestLabel "MapDBM" (TestList test_mapdbm),
-                  TestLabel "HDBCDBM" (TestList test_hdbcdbm)
+                  TestLabel "HDBCDBM-sqllite3" 
+                                (TestList (test_hdbcdbm (connectSqlite3 (joinPaths "testtmp" "HDBCDBM")))),
+                  TestLabel "HDBCDBM-psql" (TestList (test_hdbcdbm $ connectPostgreSQL ""))
                  ]
