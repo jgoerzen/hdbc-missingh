@@ -108,3 +108,54 @@ openHDBCDBM itablename ikeyname ivalname iconn =
                          tablename = mytablename,
                          keycolname = ikeyname,
                          valcolname = ivalname}
+
+basequery dbm = " FROM " ++ (tablename dbm) ++
+               "WHERE " ++ (keycolname dbm) ++ " = ?"
+
+querykey :: HDBCDBM -> String
+querykey dbm = "SELECT " ++ (keycolname dbm) ++ ", " ++
+               (valcolname dbm) ++ basequery dbm
+
+deletequery :: HDBCDBM -> String
+deletequery dbm = "DELETE " ++ basequery dbm
+
+insertquery dbm = "INSERT INTO " ++ (tablename dbm) ++
+                  " (" ++ (keycolname dbm) ++ ", " ++ (valcolname dbm) ++ 
+                  ") VALUES (?, ?)"
+
+updatequery dbm = "UPDATE " ++ (tablename dbm) ++ " SET " ++ 
+                  (valcolname dbm) ++ " = ? WHERE " ++ (keycolname dbm) ++
+                  " = ?"
+        
+instance HDBCDBM AnyDBM where
+    closeA dbm = do commit (conn dbm)
+                    disconnect (conn dbm)
+
+    flushA dbm = commit (conn dbm)
+
+    insertA dbm key value = withTransaction (conn dbm) $ \dbh ->
+            do count <- run dbh updatequery [toSql value, toSql key]
+               case count of
+                 0 -> -- No change, need to insert it.
+                      run dbh insertquery [toSql key, toSql value]
+                 1 -> return () -- We tweaked 1 row
+                 x -> fail $ "HDBC insertA: unexpected number of rows updated: " ++ show x
+
+    deleteA dbm key = withTransaction (conn dbm) $ \dbh ->
+            run dbh deletequery [toSql key]
+
+    lookupA dbm key = 
+        do res <- quickQuery (conn dbm) querykey [toSql key]
+           case res of
+             [] -> return Nothing
+             [[_, value]] -> return (Just value)
+             x -> fail $ "lookupA: unexpected return value " ++ show x
+
+    toListA dbm =
+        do res <- quickQuery (conn dbm) 
+                  ("SELECT " ++ keycolname dbm ++ ", " ++ valcolname dbm ++
+                   " FROM " ++ tablename dbm) []
+           mapM convrow res
+        where convrow [k, v] = (k, v)
+              convrow x = error $ "toListA: unexpected row " ++ show x
+
