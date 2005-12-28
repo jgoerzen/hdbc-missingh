@@ -37,7 +37,7 @@ hugsbuild: setup
 	./setup configure --hugs
 	./setup build
 
-setup: Setup.lhs MissingH.cabal
+setup: Setup.lhs HDBC-MissingH.cabal
 	ghc -package Cabal Setup.lhs -o setup
 
 doctmp/%.hs: %.lhs doctmp

@@ -36,6 +36,8 @@ module MissingH.AnyDBM.HDBCDBM where
 import MissingH.AnyDBM
 import Database.HDBC
 import System.IO(IOMode)
+import Data.Char
+import Control.Monad
 
 data HDBCDBM = HDBCDBM {conn :: Connection,
                         tablename :: String,
@@ -61,15 +63,15 @@ openSimpleHDBCDBM itablename iconn =
     do mydbh <- clone iconn
        tablelist <- getTables mydbh
        when (not ((map toLower) itablename `elem` tablelist))
-            (withTransaction mydbh (createtable (map toLower tablename)))
-       return $ HDBCDBM {connection = mydbh,
+            (withTransaction mydbh (createtable (map toLower itablename)))
+       return $ HDBCDBM {conn = mydbh,
                          tablename = (map toLower) itablename,
                          keycolname = "dbmkey",
                          valcolname = "dbmval"}
     where createtable tablename dbh =
-              run dbh $ "CREATE TABLE " ++ tablename ++ 
+              run dbh ("CREATE TABLE " ++ tablename ++ 
                         "(dbmkey text NOT NULL PRIMARY KEY, " ++
-                        "dbmval text NOT NULL)"
+                        "dbmval text NOT NULL)") [] >> return ()
 
 {- | Opens a DBM connection to the specified table, column name for key,
 column name for value, and database.
@@ -104,7 +106,7 @@ openHDBCDBM itablename ikeyname ivalname iconn =
        let mytablename = map toLower itablename
        when (not (mytablename `elem` tablelist))
             (fail $ "Table " ++ mytablename ++ " not in database.")
-       return $ HDBCDBM {connection = mydbh,
+       return $ HDBCDBM {conn = mydbh,
                          tablename = mytablename,
                          keycolname = ikeyname,
                          valcolname = ivalname}
@@ -127,35 +129,36 @@ updatequery dbm = "UPDATE " ++ (tablename dbm) ++ " SET " ++
                   (valcolname dbm) ++ " = ? WHERE " ++ (keycolname dbm) ++
                   " = ?"
         
-instance HDBCDBM AnyDBM where
+instance AnyDBM HDBCDBM where
     closeA dbm = do commit (conn dbm)
                     disconnect (conn dbm)
 
     flushA dbm = commit (conn dbm)
 
     insertA dbm key value = withTransaction (conn dbm) $ \dbh ->
-            do count <- run dbh updatequery [toSql value, toSql key]
+            do count <- run dbh (updatequery dbm) [toSql value, toSql key]
                case count of
                  0 -> -- No change, need to insert it.
-                      run dbh insertquery [toSql key, toSql value]
+                      do run dbh (insertquery dbm) [toSql key, toSql value]
+                         return ()
                  1 -> return () -- We tweaked 1 row
                  x -> fail $ "HDBC insertA: unexpected number of rows updated: " ++ show x
 
     deleteA dbm key = withTransaction (conn dbm) $ \dbh ->
-            run dbh deletequery [toSql key]
+            run dbh (deletequery dbm) [toSql key] >> return ()
 
     lookupA dbm key = 
-        do res <- quickQuery (conn dbm) querykey [toSql key]
+        do res <- quickQuery (conn dbm) (querykey dbm) [toSql key]
            case res of
              [] -> return Nothing
-             [[_, value]] -> return (Just value)
+             [[_, value]] -> return (Just (fromSql value))
              x -> fail $ "lookupA: unexpected return value " ++ show x
 
     toListA dbm =
         do res <- quickQuery (conn dbm) 
                   ("SELECT " ++ keycolname dbm ++ ", " ++ valcolname dbm ++
                    " FROM " ++ tablename dbm) []
-           mapM convrow res
-        where convrow [k, v] = (k, v)
+           return $ map convrow res
+        where convrow [k, v] = (fromSql k, fromSql v)
               convrow x = error $ "toListA: unexpected row " ++ show x
 
