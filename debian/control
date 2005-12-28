@@ -1,12 +1,12 @@
-Source: missingh
+Source: hdbc-missingh
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Build-Depends: debhelper (>= 4.0.0), ghc6 (>= 6.4.1), ghc6 (<< 6.4.1-999), haskell-devscripts (>= 0.5.6), cpphs
-Build-Depends-Indep: debhelper (>= 4.0.0), haddock, hugs (>= 98.200503.08), haskell-devscripts (>= 0.5.6)
+Build-Depends: debhelper (>= 4.0.0), ghc6 (>= 6.4.1), ghc6 (<< 6.4.1-999), haskell-devscripts (>= 0.5.6), cpphs, libghc6-missingh-dev (>= 0.13.0), libghc6-hdbc-dev (>= 0.11.0), libghc6-hdbc-sqlite3-dev (>= 0.11.0)
+Build-Depends-Indep: debhelper (>= 4.0.0), haddock, hugs (>= 98.200503.08), haskell-devscripts (>= 0.5.6), ghc6 (>= 6.4.1), libhugs-missingh (>= 0.13.0), libhugs-hdbc (>= 0.11.0), libhugs-hdbc-sqlite3 (>= 0.11.0)
 Standards-Version: 3.6.2
 Section: devel
 
-Package: libghc6-missingh-dev
+Package: libghc6-hdbc-missingh-dev
 Section: devel
 Architecture: any
 Depends: ${haskell:Depends}
@@ -23,7 +23,7 @@ Description: Library of utility functions for Haskell, GHC6 package
  due to things Haskell is missing, or things that Haskell makes
  possible.
 
-Package: libhugs-missingh
+Package: libhugs-hdbc-missingh
 Section: devel
 Architecture: all
 Depends: ${haskell:Depends}
