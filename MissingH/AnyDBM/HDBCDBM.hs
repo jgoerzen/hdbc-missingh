@@ -130,12 +130,13 @@ updatequery dbm = "UPDATE " ++ (tablename dbm) ++ " SET " ++
                   " = ?"
         
 instance AnyDBM HDBCDBM where
-    closeA dbm = do commit (conn dbm)
+    closeA dbm = handleSqlError $ 
+                 do commit (conn dbm)
                     disconnect (conn dbm)
 
-    flushA dbm = commit (conn dbm)
+    flushA dbm = handleSqlError $ commit (conn dbm)
 
-    insertA dbm key value = withTransaction (conn dbm) $ \dbh ->
+    insertA dbm key value = handleSqlError $ withTransaction (conn dbm) $ \dbh ->
             do count <- run dbh (updatequery dbm) [toSql value, toSql key]
                case count of
                  0 -> -- No change, need to insert it.
@@ -144,17 +145,17 @@ instance AnyDBM HDBCDBM where
                  1 -> return () -- We tweaked 1 row
                  x -> fail $ "HDBC insertA: unexpected number of rows updated: " ++ show x
 
-    deleteA dbm key = withTransaction (conn dbm) $ \dbh ->
+    deleteA dbm key = handleSqlError $ withTransaction (conn dbm) $ \dbh ->
             run dbh (deletequery dbm) [toSql key] >> return ()
 
-    lookupA dbm key = 
+    lookupA dbm key = handleSqlError $
         do res <- quickQuery (conn dbm) (querykey dbm) [toSql key]
            case res of
              [] -> return Nothing
              [[_, value]] -> return (Just (fromSql value))
              x -> fail $ "lookupA: unexpected return value " ++ show x
 
-    toListA dbm =
+    toListA dbm = handleSqlError $
         do res <- quickQuery (conn dbm) 
                   ("SELECT " ++ keycolname dbm ++ ", " ++ valcolname dbm ++
                    " FROM " ++ tablename dbm) []
