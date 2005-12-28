@@ -112,7 +112,7 @@ openHDBCDBM itablename ikeyname ivalname iconn =
                          valcolname = ivalname}
 
 basequery dbm = " FROM " ++ (tablename dbm) ++
-               "WHERE " ++ (keycolname dbm) ++ " = ?"
+               " WHERE " ++ (keycolname dbm) ++ " = ?"
 
 querykey :: HDBCDBM -> String
 querykey dbm = "SELECT " ++ (keycolname dbm) ++ ", " ++

@@ -73,7 +73,7 @@ local-pkg: all
 	echo "]" >> local-pkg
 
 testsrc/runtests: all $(wildcard testsrc/*.hs) $(wildcard testsrc/*/*.hs) $(wildcard testsrc/*/*/*.hs)
-	cd testsrc && ghc --make -package mtl -package HUnit $(GHCPARMS) -o runtests  -i../dist/build:.. runtests.hs
+	cd testsrc && ghc --make -package mtl -package HUnit -package MissingH -package HDBC-sqlite3 $(GHCPARMS) -o runtests  -i../dist/build:.. runtests.hs
 
 test-ghc6: testsrc/runtests
 	testsrc/runtests
