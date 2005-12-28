@@ -136,17 +136,19 @@ instance AnyDBM HDBCDBM where
 
     flushA dbm = handleSqlError $ commit (conn dbm)
 
-    insertA dbm key value = handleSqlError $ withTransaction (conn dbm) $ \dbh ->
-            do count <- run dbh (updatequery dbm) [toSql value, toSql key]
+    insertA dbm key value = handleSqlError $ 
+            do count <- run (conn dbm) (updatequery dbm) 
+                        [toSql value, toSql key]
                case count of
                  0 -> -- No change, need to insert it.
-                      do run dbh (insertquery dbm) [toSql key, toSql value]
+                      do run (conn dbm) (insertquery dbm) 
+                          [toSql key, toSql value]
                          return ()
                  1 -> return () -- We tweaked 1 row
                  x -> fail $ "HDBC insertA: unexpected number of rows updated: " ++ show x
 
-    deleteA dbm key = handleSqlError $ withTransaction (conn dbm) $ \dbh ->
-            run dbh (deletequery dbm) [toSql key] >> return ()
+    deleteA dbm key = handleSqlError $
+            run (conn dbm) (deletequery dbm) [toSql key] >> return ()
 
     lookupA dbm key = handleSqlError $
         do res <- quickQuery (conn dbm) (querykey dbm) [toSql key]
