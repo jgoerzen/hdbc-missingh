@@ -41,6 +41,7 @@ import System.IO(IOMode)
 import Data.Char
 import Control.Monad
 import Control.Exception 
+import Control.Concurrent.MVar
 
 {- | Main HDBC DBM type.
 
@@ -50,7 +51,8 @@ into IOErrors. -}
 data HDBCDBM = HDBCDBM {conn :: Connection,
                         tablename :: String,
                         keycolname :: String,
-                        valcolname :: String}
+                        valcolname :: String,
+                        lock :: MVar ()}
 
 {- | Opens a DBM connection to the specified table and database.
 
@@ -72,10 +74,12 @@ openSimpleHDBCDBM itablename iconn =
        tablelist <- getTables mydbh
        when (not ((map toLower) itablename `elem` tablelist))
             (withTransaction mydbh (createtable (map toLower itablename)))
+       newmv <- newMVar ()
        return $ HDBCDBM {conn = mydbh,
                          tablename = (map toLower) itablename,
                          keycolname = "dbmkey",
-                         valcolname = "dbmval"}
+                         valcolname = "dbmval",
+                         lock = newmv}
     where createtable tablename dbh =
               run dbh ("CREATE TABLE " ++ tablename ++ 
                         "(dbmkey text NOT NULL PRIMARY KEY, " ++
@@ -114,10 +118,12 @@ openHDBCDBM itablename ikeyname ivalname iconn =
        let mytablename = map toLower itablename
        when (not (mytablename `elem` tablelist))
             (fail $ "Table " ++ mytablename ++ " not in database.")
+       newmv <- newMVar ()
        return $ HDBCDBM {conn = mydbh,
                          tablename = mytablename,
                          keycolname = ikeyname,
-                         valcolname = ivalname}
+                         valcolname = ivalname,
+                         lock = newmv}
 
 basequery dbm = " FROM " ++ (tablename dbm) ++
                " WHERE " ++ (keycolname dbm) ++ " = ?"
@@ -137,14 +143,16 @@ updatequery dbm = "UPDATE " ++ (tablename dbm) ++ " SET " ++
                   (valcolname dbm) ++ " = ? WHERE " ++ (keycolname dbm) ++
                   " = ?"
         
+withlock dbm f = withMVar (lock dbm) (\_ -> f)
+
 instance AnyDBM HDBCDBM where
     closeA dbm = handleerror dbm $ 
                  do commit (conn dbm)
                     disconnect (conn dbm)
 
-    flushA dbm = handleerror dbm $ commit (conn dbm)
+    flushA dbm = handleerror dbm $ withlock dbm $ commit (conn dbm)
 
-    insertA dbm key value = handleerror dbm $ 
+    insertA dbm key value = handleerror dbm $ withlock dbm $
             do count <- run (conn dbm) (updatequery dbm) 
                         [toSql value, toSql key]
                case count of
@@ -155,17 +163,17 @@ instance AnyDBM HDBCDBM where
                  1 -> return () -- We tweaked 1 row
                  x -> fail $ "HDBC insertA: unexpected number of rows updated: " ++ show x
 
-    deleteA dbm key = handleerror dbm $
+    deleteA dbm key = handleerror dbm $ withlock dbm $
             run (conn dbm) (deletequery dbm) [toSql key] >> return ()
 
-    lookupA dbm key = handleerror dbm $
+    lookupA dbm key = handleerror dbm $ withlock dbm $
         do res <- quickQuery (conn dbm) (querykey dbm) [toSql key]
            case res of
              [] -> return Nothing
              [[_, value]] -> return (Just (fromSql value))
              x -> fail $ "lookupA: unexpected return value " ++ show x
 
-    toListA dbm = handleerror dbm $
+    toListA dbm = handleerror dbm $ withlock dbm $
         do res <- quickQuery (conn dbm) 
                   ("SELECT " ++ keycolname dbm ++ ", " ++ valcolname dbm ++
                    " FROM " ++ tablename dbm) []
