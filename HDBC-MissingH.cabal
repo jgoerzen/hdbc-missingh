@@ -1,0 +1,18 @@
+Name: HDBC-MissingH
+Version: 0.99.0.0
+License: LGPL
+Maintainer: John Goerzen <jgoerzen@complete.org>
+Stability: Alpht
+Copyright: Copyright (c) 2004-2005 John Goerzen
+Exposed-Modules: MissingH.AnyDBM.HDBCDBM
+--Extensions: ExistentialQuantification, AllowOverlappingInstances,
+--    AllowUndecidableInstances, CPP
+Build-Depends: base, mtl, MissingH>=0.13.0
+GHC-Options: -O2
+
+Executable: runtests
+Buildable: False
+Main-Is: runtests.hs
+HS-Source-Dir: testsrc
+Extensions: ExistentialQuantification, AllowOverlappingInstances,
+    AllowUndecidableInstances, CPP
