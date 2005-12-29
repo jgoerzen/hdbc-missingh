@@ -49,11 +49,11 @@ doctmp:
 
 .PHONY: doc
 doc: $(LHSCONVSOURCES) hugsbuild
-	-rm -rf html
-	mkdir html
-	haddock $(HADDOCKARGS) --package=MissingH \
-	   --dump-interface=html/MissingH.haddock \
-	   -t 'MissingH API Manual' -h -o html $(HUGSCONVSOURCES) $(LHSCONVSOURCES)
+	-rm -rf doc
+	mkdir doc
+	haddock $(HADDOCKARGS) --package=HDBC-MissingH \
+	   --dump-interface=doc/HDBC-MissingH.haddock \
+	   -t 'HDBC-MissingH API Manual' -h -o doc $(HUGSCONVSOURCES) $(LHSCONVSOURCES)
 
 .PHONY: hugsbuild
 
