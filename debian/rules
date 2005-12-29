@@ -90,7 +90,7 @@ binary-indep: builddocs installdocs
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs -i
-	dh_installdocs -i doc/*
+	dh_installdocs -i doc/* README.txt
 	dh_installexamples -i
 #	dh_install
 #	dh_installmenu
@@ -121,7 +121,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs -a
-	dh_installdocs -a doc/*
+	dh_installdocs -a doc/* README.txt
 	dh_installexamples -a
 #	dh_install
 #	dh_installmenu
