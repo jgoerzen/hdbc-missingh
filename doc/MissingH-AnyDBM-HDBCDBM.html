@@ -1,0 +1,373 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--Rendered using the Haskell Html Library v0.2-->
+<HTML
+><HEAD
+><META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8"
+><TITLE
+>MissingH.AnyDBM.HDBCDBM</TITLE
+><LINK HREF="haddock.css" REL="stylesheet" TYPE="text/css"
+><SCRIPT SRC="haddock.js" TYPE="text/javascript"
+></SCRIPT
+></HEAD
+><BODY
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="topbar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><IMG SRC="haskell_icon.gif" WIDTH="16" HEIGHT="16" ALT=" "
+></TD
+><TD CLASS="title"
+>HDBC-MissingH API Manual</TD
+><TD CLASS="topbut"
+><A HREF="index.html"
+>Contents</A
+></TD
+><TD CLASS="topbut"
+><A HREF="doc-index.html"
+>Index</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="modulebar"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD
+><FONT SIZE="6"
+>MissingH.AnyDBM.HDBCDBM</FONT
+></TD
+><TD ALIGN="right"
+><TABLE CLASS="narrow" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="infohead"
+>Portability</TD
+><TD CLASS="infoval"
+>portable</TD
+></TR
+><TR
+><TD CLASS="infohead"
+>Stability</TD
+><TD CLASS="infoval"
+>provisional</TD
+></TR
+><TR
+><TD CLASS="infohead"
+>Maintainer</TD
+><TD CLASS="infoval"
+>John Goerzen &lt;jgoerzen@complete.org&gt;</TD
+></TR
+></TABLE
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Description</TD
+></TR
+><TR
+><TD CLASS="doc"
+><P
+>HDBC backend for DBM databases
+</P
+><P
+>Written by John Goerzen, jgoerzen@complete.org
+</P
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Synopsis</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+> <A HREF="#t%3AHDBCDBM"
+>HDBCDBM</A
+> </TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AopenSimpleHDBCDBM"
+>openSimpleHDBCDBM</A
+> :: String -&gt; Connection -&gt; IO <A HREF="MissingH-AnyDBM-HDBCDBM.html#t%3AHDBCDBM"
+>HDBCDBM</A
+></TD
+></TR
+><TR
+><TD CLASS="s8"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A HREF="#v%3AopenHDBCDBM"
+>openHDBCDBM</A
+> :: String -&gt; String -&gt; String -&gt; Connection -&gt; IO <A HREF="MissingH-AnyDBM-HDBCDBM.html#t%3AHDBCDBM"
+>HDBCDBM</A
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="section1"
+>Documentation</TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><SPAN CLASS="keyword"
+>data</SPAN
+> <A NAME="t%3AHDBCDBM"
+></A
+><B
+>HDBCDBM</B
+> </TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="ndoc"
+><P
+>Main HDBC DBM type.
+</P
+><P
+>Please note that accessor methods on these objects will not return SqlErrors
+since AnyDBM users won't expect them.  Instead, they will marshal those
+into IOErrors.
+</P
+><P
+>Also, please note that you cannot expect a HDBCDBM to be able to store
+the NUL character since most SQL databases can't store it.  If you need to be
+able to store that character with your data, I suggest passing your data
+through read/show around this module.
+</P
+></TD
+></TR
+><TR
+><TD CLASS="section4"
+><IMG SRC="minus.gif" CLASS="coll" ONCLICK="toggle(this,'i:HDBCDBM')" ALT="show/hide"
+> Instances</TD
+></TR
+><TR
+><TD CLASS="body"
+><DIV ID="i:HDBCDBM" STYLE="display:block;"
+><TABLE CLASS="vanilla" CELLSPACING="1" CELLPADDING="0"
+><TR
+><TD CLASS="decl"
+>AnyDBM <A HREF="MissingH-AnyDBM-HDBCDBM.html#t%3AHDBCDBM"
+>HDBCDBM</A
+></TD
+></TR
+></TABLE
+></DIV
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v%3AopenSimpleHDBCDBM"
+></A
+><B
+>openSimpleHDBCDBM</B
+> :: String -&gt; Connection -&gt; IO <A HREF="MissingH-AnyDBM-HDBCDBM.html#t%3AHDBCDBM"
+>HDBCDBM</A
+></TD
+></TR
+><TR
+><TD CLASS="doc"
+><P
+>Opens a DBM connection to the specified table and database.
+</P
+><P
+>If the given table does not already exist, it will be created for you
+automatically.
+</P
+><P
+>The column names <TT
+>dbmkey</TT
+> and <TT
+>dbmval</TT
+> will be used.
+</P
+><P
+>The <TT
+><A HREF="Database-HDBC.html#v%3Aclone"
+>clone</A
+></TT
+> method will be used to obtain a new handle to 
+the database for internal use.  That will help prevent conflicts with things
+like commits from occuring with the main application handle.  You should not
+have to worry about side-effects to your main application as a result of
+using this function.
+</P
+><P
+>If you need more control, see <TT
+><A HREF="MissingH-AnyDBM-HDBCDBM.html#v%3AopenHDBCDBM"
+>openHDBCDBM</A
+></TT
+> 
+</P
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="decl"
+><A NAME="v%3AopenHDBCDBM"
+></A
+><B
+>openHDBCDBM</B
+></TD
+></TR
+><TR
+><TD CLASS="body"
+><TABLE CLASS="vanilla" CELLSPACING="0" CELLPADDING="0"
+><TR
+><TD CLASS="arg"
+>:: String</TD
+><TD CLASS="rdoc"
+>Name of table to use
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+>-&gt; String</TD
+><TD CLASS="rdoc"
+>Name of column with keys
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+>-&gt; String</TD
+><TD CLASS="rdoc"
+>Name of column with values
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+>-&gt; Connection</TD
+><TD CLASS="rdoc"
+>HDBC connection object to clone
+</TD
+></TR
+><TR
+><TD CLASS="arg"
+>-&gt; IO <A HREF="MissingH-AnyDBM-HDBCDBM.html#t%3AHDBCDBM"
+>HDBCDBM</A
+></TD
+><TD CLASS="rdoc"
+>Returned DBM object
+</TD
+></TR
+><TR
+><TD CLASS="ndoc" COLSPAN="2"
+><P
+>Opens a DBM connection to the specified table, column name for key,
+column name for value, and database.
+</P
+><P
+>It is an error if the given table does not exist, lacks the specified columns,
+or has an incorrect type definition for the specified columns.  However,
+it is not guaranteed that this error will be detected at object creation time.
+</P
+><P
+>This function does not create a table for you if it doesn't exist.
+</P
+><P
+>You can use the table created and used by <TT
+><A HREF="MissingH-AnyDBM-HDBCDBM.html#v%3AopenSimpleHDBCDBM"
+>openSimpleHDBCDBM</A
+></TT
+> like this:
+</P
+><PRE
+>openHDBCDBM &quot;tablename&quot; &quot;dbmkey&quot; &quot;dbmval&quot; conn
+</PRE
+><P
+>Incidentally, such a table could be created with:
+</P
+><PRE
+>CREATE TABLE tablename (dbmkey text NOT NULL PRIMARY KEY, dmval text NOT NULL)
+</PRE
+><P
+>The <TT
+><A HREF="Database-HDBC.html#v%3Aclone"
+>clone</A
+></TT
+> method will be used to obtain a new handle to 
+the database for internal use.  That will help prevent conflicts with things
+like commits from occuring with the main application handle.  You should not
+have to worry about side-effects to your main application as a result of
+using this function. 
+</P
+></TD
+></TR
+></TABLE
+></TD
+></TR
+><TR
+><TD CLASS="s15"
+></TD
+></TR
+><TR
+><TD CLASS="botbar"
+>Produced by <A HREF="http://www.haskell.org/haddock/"
+>Haddock</A
+> version 0.7</TD
+></TR
+></TABLE
+></BODY
+></HTML
+>
