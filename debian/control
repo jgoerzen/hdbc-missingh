@@ -10,49 +10,24 @@ Package: libghc6-hdbc-missingh-dev
 Section: devel
 Architecture: any
 Depends: ${haskell:Depends}, libghc6-missingh-dev (>= 0.13.0), libghc6-hdbc-dev (>= 0.99.0)
-Description: Library of utility functions for Haskell, GHC6 package 
- MissingH is a library of all sorts of utility functions for
- Haskell programmers.  It is written in pure Haskell and thus should
- be extremely portable and easy to use.  It also has no prerequisites
- save those that are commonly included with Haskell compilers.
+Description: Integration of HDBC with MissingH, GHC version
+ HDBC-MissingH is a package to integrate HDBC (Haskell Database
+ Connectivity) with the MissingH library.
  .
- MissingH is based on my MissingLib library for OCaml and contains some
- of the same features.  However, some features are left behind because
- they are already in Haskell or not needed here -- and others are added
- due to things Haskell is missing, or things that Haskell makes
- possible.
+ At the moment, this means that any HDBC database can act as a backend
+ for the MissingH.AnyDBM interface.
+ .
+ This package provides HDBC-MissingH for GHC.
 
 Package: libhugs-hdbc-missingh
 Section: devel
 Architecture: all
 Depends: ${haskell:Depends}, libhugs-missingh (>= 0.13.0), libhugs-hdbc (>= 0.99.0)
-Suggests: missingh-doc
-Description: Library of utility functions for Haskell, Hugs package 
- MissingH is a library of all sorts of utility functions for
- Haskell programmers.  It is written in pure Haskell and thus should
- be extremely portable and easy to use.  It also has no prerequisites
- save those that are commonly included with Haskell compilers.
+Description: Integration of HDBC with MissingH, Hugs version
+ HDBC-MissingH is a package to integrate HDBC (Haskell Database
+ Connectivity) with the MissingH library.
  .
- MissingH is based on my MissingLib library for OCaml and contains some
- of the same features.  However, some features are left behind because
- they are already in Haskell or not needed here -- and others are added
- due to things Haskell is missing, or things that Haskell makes
- possible.
-
-Package: missingh-doc
-Section: doc
-Architecture: all
-Description: Documentation for Haskell utility library
- MissingH is a library of all sorts of utility functions for
- Haskell programmers.  It is written in pure Haskell and thus should
- be extremely portable and easy to use.  It also has no prerequisites
- save those that are commonly included with Haskell compilers.
+ At the moment, this means that any HDBC database can act as a backend
+ for the MissingH.AnyDBM interface.
  .
- MissingH is based on my MissingLib library for OCaml and contains some
- of the same features.  However, some features are left behind because
- they are already in Haskell or not needed here -- and others are added
- due to things Haskell is missing, or things that Haskell makes
- possible.
- .
- This package provides the API documentation for MissingH.
-
+ This package provides HDBC-MissingH for Hugs.
