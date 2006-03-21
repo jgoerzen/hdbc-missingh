@@ -1,3 +1,9 @@
+hdbc-missingh (0.99.0.1) unstable; urgency=low
+
+  * Updated build-deps on MissingH.
+
+ -- John Goerzen <jgoerzen@complete.org>  Mon, 20 Mar 2006 20:39:34 -0600
+
 hdbc-missingh (0.99.0.0) unstable; urgency=low
 
   * Initial release.

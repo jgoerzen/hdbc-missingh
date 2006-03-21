@@ -1,7 +1,7 @@
 Source: hdbc-missingh
 Priority: optional
 Maintainer: John Goerzen <jgoerzen@complete.org>
-Build-Depends: debhelper (>= 4.0.0), ghc6 (>= 6.4.1), ghc6 (<< 6.4.1-999), haskell-devscripts (>= 0.5.6), cpphs, libghc6-missingh-dev (>= 0.13.0), libghc6-hdbc-dev (>= 0.11.0)
+Build-Depends: debhelper (>= 4.0.0), ghc6 (>= 6.4.1), ghc6 (<< 6.4.1-999), haskell-devscripts (>= 0.5.6), cpphs, libghc6-missingh-dev (>= 0.13.1), libghc6-hdbc-dev (>= 0.11.0)
 Build-Depends-Indep: debhelper (>= 4.0.0), haddock, hugs (>= 98.200503.08), haskell-devscripts (>= 0.5.6), ghc6 (>= 6.4.1), libhugs-missingh (>= 0.13.0), libhugs-hdbc (>= 0.11.0)
 Standards-Version: 3.6.2
 Section: devel
@@ -9,7 +9,7 @@ Section: devel
 Package: libghc6-hdbc-missingh-dev
 Section: devel
 Architecture: any
-Depends: ${haskell:Depends}, libghc6-missingh-dev (>= 0.13.0), libghc6-hdbc-dev (>= 0.99.0)
+Depends: ${haskell:Depends}, libghc6-missingh-dev (>= 0.13.1), libghc6-hdbc-dev (>= 0.99.0)
 Description: Integration of HDBC with MissingH, GHC version
  HDBC-MissingH is a package to integrate HDBC (Haskell Database
  Connectivity) with the MissingH library.
