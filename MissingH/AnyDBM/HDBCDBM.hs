@@ -73,7 +73,11 @@ like commits from occuring with the main application handle.  You should not
 have to worry about side-effects to your main application as a result of
 using this function.
 
-If you need more control, see 'openHDBCDBM' -}
+If you need more control, see 'openHDBCDBM'
+
+Please note that HDBCDBM checks dbTransactionSupport.  If your database
+indicates that transactions are /NOT/ supported (such as MySQL), then
+atomicity and safety may not be guaranteed in multithreaded programs. -}
 openSimpleHDBCDBM :: String -> Connection -> IO HDBCDBM
 openSimpleHDBCDBM itablename iconn =
     do mydbh <- clone iconn
@@ -153,10 +157,10 @@ withlock dbm f = withMVar (lock dbm) (\_ -> f)
 
 instance AnyDBM HDBCDBM where
     closeA dbm = handleerror dbm $ 
-                 do commit (conn dbm)
+                 do condcommit (conn dbm)
                     disconnect (conn dbm)
 
-    flushA dbm = handleerror dbm $ withlock dbm $ commit (conn dbm)
+    flushA dbm = handleerror dbm $ withlock dbm $ condcommit (conn dbm)
 
     insertA dbm key value = handleerror dbm $ withlock dbm $
             do count <- run (conn dbm) (updatequery dbm) 
@@ -197,6 +201,9 @@ Also, wrap it all in handleSqlError since AnyDBM users might not expect
 a SqlError. -}
 handleerror dbm action = handleSqlError $ catchSql action handler
     where handler e =
-              do commit (conn dbm)
+              do condcommit (conn dbm)
                  throwDyn e
 
+{- Only do a commit if the DB supports it. -}
+condcommit dbh =
+    when (dbTransactionSupport dbh) (commit dbh)

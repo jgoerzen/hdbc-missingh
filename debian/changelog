@@ -1,3 +1,10 @@
+hdbc-missingh (0.99.2.0) unstable; urgency=low
+
+  * Rebuild against HDBC 0.99.2.
+  * Don't try to commit against DBs that don't support transactions.
+
+ -- John Goerzen <jgoerzen@complete.org>  Tue, 28 Mar 2006 05:46:12 -0600
+
 hdbc-missingh (0.99.1.0) unstable; urgency=low
 
   * Rebuilt against HDBC 0.99.1.
