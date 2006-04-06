@@ -1,3 +1,9 @@
+hdbc-missingh (0.99.2.1) unstable; urgency=low
+
+  * Rebuilding for new MissingH.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu,  6 Apr 2006 02:47:37 -0500
+
 hdbc-missingh (0.99.2.0) unstable; urgency=low
 
   * Rebuild against HDBC 0.99.2.
