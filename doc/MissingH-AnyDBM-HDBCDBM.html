@@ -255,7 +255,14 @@ using this function.
 ><A HREF="MissingH-AnyDBM-HDBCDBM.html#v%3AopenHDBCDBM"
 >openHDBCDBM</A
 ></TT
-> 
+>
+</P
+><P
+>Please note that HDBCDBM checks dbTransactionSupport.  If your database
+indicates that transactions are <EM
+>NOT</EM
+> supported (such as MySQL), then
+atomicity and safety may not be guaranteed in multithreaded programs. 
 </P
 ></TD
 ></TR
