@@ -1,3 +1,10 @@
+hdbc-missingh (1.0.0.0) unstable; urgency=low
+
+  * Blessing for 1.0.0.
+  * Rebuilding for Debian with GHC 6.4.2.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 29 Jun 2006 18:50:18 -0500
+
 hdbc-missingh (0.99.2.3) unstable; urgency=low
 
   * Rebuilding for MissingH 0.14.2.
