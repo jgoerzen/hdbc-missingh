@@ -1,3 +1,9 @@
+hdbc-missingh (1.0.0.1) unstable; urgency=low
+
+  * Rebuilding for HDBC 1.0.1
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 22 Jul 2006 07:29:15 -0500
+
 hdbc-missingh (1.0.0.0) unstable; urgency=low
 
   * Blessing for 1.0.0.
