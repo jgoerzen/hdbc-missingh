@@ -1,3 +1,9 @@
+hdbc-missingh (1.0.0.2) unstable; urgency=low
+
+  * Rebuilding for GHC 6.6.
+
+ -- John Goerzen <jgoerzen@complete.org>  Thu, 19 Oct 2006 21:52:53 -0500
+
 hdbc-missingh (1.0.0.1) unstable; urgency=low
 
   * Rebuilding for HDBC 1.0.1
