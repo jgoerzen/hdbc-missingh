@@ -1,4 +1,4 @@
-hdbc-missingh (1.0.0.2) unstable; urgency=low
+hdbc-missingh (1.0.1.0) unstable; urgency=low
 
   * Rebuilding for GHC 6.6.
 
