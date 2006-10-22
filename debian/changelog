@@ -1,3 +1,9 @@
+hdbc-missingh (1.0.1.1) unstable; urgency=low
+
+  * Add missing build-dep on libghc6-hunit-dev.
+
+ -- John Goerzen <jgoerzen@complete.org>  Sat, 21 Oct 2006 20:15:32 -0500
+
 hdbc-missingh (1.0.1.0) unstable; urgency=low
 
   * Rebuilding for GHC 6.6.
